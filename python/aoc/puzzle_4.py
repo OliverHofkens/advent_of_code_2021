@@ -12,15 +12,16 @@ def main():
         action, amount = line.split()
         amount = int(amount)
 
-        if action == "forward":
-            horizontal += amount
-            depth += aim * amount
-        elif action == "down":
-            aim += amount
-        elif action == "up":
-            aim -= amount
-        else:
-            raise NotImplementedError(action)
+        match action:
+            case "forward":
+                horizontal += amount
+                depth += aim * amount
+            case "down":
+                aim += amount
+            case "up":
+                aim -= amount
+            case _:
+                raise NotImplementedError(action)
 
     print(depth * horizontal)
 

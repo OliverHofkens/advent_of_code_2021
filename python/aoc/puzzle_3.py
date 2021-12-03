@@ -11,14 +11,15 @@ def main():
         action, amount = line.split()
         amount = int(amount)
 
-        if action == "forward":
-            horizontal += amount
-        elif action == "down":
-            depth += amount
-        elif action == "up":
-            depth -= amount
-        else:
-            raise NotImplementedError(action)
+        match action:
+            case "forward":
+                horizontal += amount
+            case "down":
+                depth += amount
+            case "up":
+                depth -= amount
+            case _:
+                raise NotImplementedError(action)
 
     print(depth * horizontal)
 
