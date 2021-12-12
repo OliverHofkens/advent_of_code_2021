@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Set
 
 CaveMap = Dict[str, List[str]]
-Route = List[str]
+Route = str
 
 
 def visit(
@@ -17,7 +17,6 @@ def visit(
 ) -> List[Route]:
     # If we made it to the end, hooray!
     if cave == "end":
-        route.append(cave)
         return [route]
 
     # Only visit small caves once:
@@ -26,22 +25,17 @@ def visit(
         if cave != double_visit_choice or cave in route:
             seen.add(cave)
 
-    route.append(cave)
+    route += cave
 
     destinations = [d for d in system[cave] if d not in seen]
     routes = []
     for d in destinations:
-        non_doubled = visit(system, d, seen.copy(), double_visit_choice, route.copy())
+        routes.extend(visit(system, d, seen.copy(), double_visit_choice, route))
         # For a small cave, we can choose it as our "double visit" for this route
         # if we haven't chosen one already:
         if d.islower() and not double_visit_choice:
-            doubled = visit(system, d, seen.copy(), d, route.copy())
-            # There are cases where our choice doesn't matter, and just leads
-            # to the same path as non_doubled. Check that here:
-            doubled = [r for r in doubled if r not in non_doubled]
-            routes.extend(doubled)
+            routes.extend(visit(system, d, seen.copy(), d, route))
 
-        routes.extend(non_doubled)
     return routes
 
 
@@ -56,8 +50,10 @@ def main():
         if b != "end" and a != "start":
             graph[b].append(a)
 
-    routes = visit(graph, "start", set(), None, [])
-    print(len(routes))
+    routes = visit(graph, "start", set(), None, "")
+    # If our 'double visit choice' leads to no difference, we can have double paths,
+    # so make a set first:
+    print(len(set(routes)))
 
 
 if __name__ == "__main__":
