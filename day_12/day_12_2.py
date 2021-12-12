@@ -11,7 +11,7 @@ Route = str
 def visit(
     system: CaveMap,
     cave: str,
-    seen: Set[str],
+    seen: str,
     double_visit_choice: Optional[str],
     route: Route,
 ) -> List[Route]:
@@ -23,18 +23,18 @@ def visit(
     if cave.islower():
         # There is however, a single small cave we can visit twice:
         if cave != double_visit_choice or cave in route:
-            seen.add(cave)
+            seen += cave
 
     route += cave
 
     destinations = [d for d in system[cave] if d not in seen]
     routes = []
     for d in destinations:
-        routes.extend(visit(system, d, seen.copy(), double_visit_choice, route))
+        routes.extend(visit(system, d, seen, double_visit_choice, route))
         # For a small cave, we can choose it as our "double visit" for this route
         # if we haven't chosen one already:
         if d.islower() and not double_visit_choice:
-            routes.extend(visit(system, d, seen.copy(), d, route))
+            routes.extend(visit(system, d, seen, d, route))
 
     return routes
 
@@ -50,7 +50,7 @@ def main():
         if b != "end" and a != "start":
             graph[b].append(a)
 
-    routes = visit(graph, "start", set(), None, "")
+    routes = visit(graph, "start", "", None, "")
     # If our 'double visit choice' leads to no difference, we can have double paths,
     # so make a set first:
     print(len(set(routes)))
