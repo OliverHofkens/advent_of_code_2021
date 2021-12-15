@@ -54,8 +54,26 @@ def dijkstra(map_: List[List[int]]) -> int:
     return dists[-1][-1]
 
 
+def inc_risk(tile: List[List[int]]) -> List[List[int]]:
+    return [[x + 1 if x < 9 else 1 for x in row] for row in tile]
+
+
 def main():
     risk_lvls = [[int(x) for x in row.strip()] for row in sys.stdin.readlines()]
+
+    # The map grows 5x as large in both directions:
+    tile = risk_lvls.copy()
+    # Grow horizontally:
+    for _ in range(4):
+        tile = inc_risk(tile)
+        for row, ext in zip(risk_lvls, tile):
+            row.extend(ext)
+    # Then grow vertically:
+    tile = risk_lvls.copy()
+    for _ in range(4):
+        tile = inc_risk(tile)
+        risk_lvls.extend(tile)
+
     lowest_cost = dijkstra(risk_lvls)
     print(lowest_cost)
 
