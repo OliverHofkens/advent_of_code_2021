@@ -1,25 +1,11 @@
 #!/usr/bin/env python
 
+import heapq
 import sys
 from typing import Iterator, List, Set, Tuple
 
 # A big int as placeholder for infinity
 INT_INF = 1_000_000_000
-
-
-def _min_index_unseen(
-    map_: List[List[int]], unseen: Set[Tuple[int, int]]
-) -> Tuple[int, Tuple[int, int]]:
-    current_min = INT_INF
-    current_min_idx: Tuple[int, int]
-
-    for i, j in unseen:
-        risk = map_[i][j]
-        if risk < current_min:
-            current_min = risk
-            current_min_idx = (i, j)
-
-    return current_min, current_min_idx
 
 
 def _neighbors(
@@ -44,23 +30,26 @@ def dijkstra(map_: List[List[int]]) -> int:
         The cost of the lowest-cost path to the end.
     """
     width, height = len(map_[0]), len(map_)
-    verts = {(i, j) for i in range(height) for j in range(width)}
+    unseen = {(i, j) for i in range(height) for j in range(width)}
     dists = [[INT_INF] * width for _ in range(height)]
 
     source = (0, 0)
     dists[source[0]][source[1]] = 0
 
-    while verts:
-        current_dist, current_pt = _min_index_unseen(dists, verts)
-        verts.remove(current_pt)
+    verts = [(0, *source)]
+    heapq.heapify(verts)
 
-        for neighbor in _neighbors(current_pt, width, height):
-            if neighbor not in verts:
+    while verts:
+        dist, i, j = heapq.heappop(verts)
+
+        for neighbor in _neighbors((i, j), width, height):
+            if neighbor not in unseen:
                 continue
             neighbor_dist = dists[neighbor[0]][neighbor[1]]
-            alt = current_dist + map_[neighbor[0]][neighbor[1]]
+            alt = dist + map_[neighbor[0]][neighbor[1]]
             if alt < neighbor_dist:
                 dists[neighbor[0]][neighbor[1]] = alt
+                heapq.heappush(verts, (alt, *neighbor))
 
     return dists[-1][-1]
 
