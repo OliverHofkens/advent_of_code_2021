@@ -5,6 +5,8 @@ import sys
 from bitarray import bitarray
 from bitarray.util import ba2int
 
+ITERATIONS = 50
+
 
 def _algo_idx(img, i, j, out_of_bounds: int = 0) -> int:
     idx_bits = bitarray()
@@ -59,7 +61,7 @@ def main():
 
     # Enhance twice:
     out_of_bounds = 0
-    for _ in range(2):
+    for _ in range(ITERATIONS):
         img = enhance(img, algo, out_of_bounds)
         out_of_bounds = 0 if out_of_bounds else 1
 
